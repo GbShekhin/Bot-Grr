@@ -65,10 +65,13 @@ client.once("clientReady", async (readyClient) => {
 
   const rest = new REST().setToken(token!);
   try {
-    await rest.put(Routes.applicationCommands(readyClient.user.id), {
-      body: commands,
-    });
-    console.log("Comandos slash registrados com sucesso.");
+    for (const guild of readyClient.guilds.cache.values()) {
+      await rest.put(
+        Routes.applicationGuildCommands(readyClient.user.id, guild.id),
+        { body: commands }
+      );
+      console.log(`Comandos registrados no servidor: ${guild.name}`);
+    }
   } catch (err) {
     console.error("Erro ao registrar comandos:", err);
   }
