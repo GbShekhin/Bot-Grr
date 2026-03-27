@@ -96,6 +96,8 @@ client.on("interactionCreate", async (interaction) => {
       await handleAprovar(interaction);
     } else if (interaction.customId.startsWith("reprovar_")) {
       await handleReprovar(interaction);
+    } else if (interaction.customId.startsWith("fechar_ticket_")) {
+      await handleFecharTicket(interaction);
     }
     return;
   }
@@ -371,7 +373,14 @@ async function handleAprovar(interaction: ButtonInteraction): Promise<void> {
     .setColor(0x57f287)
     .setTimestamp();
 
-  await (ticket as TextChannel).send({ embeds: [embedAprovado] });
+  const botaoFechar = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`fechar_ticket_${ticket.id}`)
+      .setLabel("🔒 Fechar Ticket")
+      .setStyle(ButtonStyle.Danger)
+  );
+
+  await (ticket as TextChannel).send({ embeds: [embedAprovado], components: [botaoFechar] });
 
   const embedAtualizado = new EmbedBuilder()
     .setTitle("📋 Solicitação de Recrutamento")
@@ -414,6 +423,24 @@ async function handleReprovar(interaction: ButtonInteraction): Promise<void> {
   } catch {
     console.log("Não foi possível enviar DM ao solicitante.");
   }
+}
+
+async function handleFecharTicket(interaction: ButtonInteraction): Promise<void> {
+  await interaction.deferReply();
+
+  const embed = new EmbedBuilder()
+    .setDescription("🔒 **Ticket será fechado em 5 segundos...**")
+    .setColor(0xff0000);
+
+  await interaction.editReply({ embeds: [embed] });
+
+  setTimeout(async () => {
+    try {
+      await interaction.channel?.delete();
+    } catch {
+      console.log("Não foi possível deletar o canal do ticket.");
+    }
+  }, 5000);
 }
 
 client.login(token);
