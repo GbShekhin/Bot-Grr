@@ -337,6 +337,15 @@ async function handleAprovar(interaction: ButtonInteraction): Promise<void> {
 
   const nomeCanal = `recrutamento-${nome.toLowerCase().replace(/\s+/g, "-").slice(0, 20)}`;
 
+  const CARGOS_RECRUTADORES = [
+    "1328405751923998862",
+    "1467161480695648339",
+    "1319286253614796873",
+    "1456346520357048351",
+    "1288859956510199855",
+    "1288859956510199854",
+  ];
+
   const ticket = await interaction.guild!.channels.create({
     name: nomeCanal,
     type: ChannelType.GuildText,
@@ -354,6 +363,10 @@ async function handleAprovar(interaction: ButtonInteraction): Promise<void> {
         id: interaction.user.id,
         allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
       },
+      ...CARGOS_RECRUTADORES.map((cargoId) => ({
+        id: cargoId,
+        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+      })),
     ],
   });
 
